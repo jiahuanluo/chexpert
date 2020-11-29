@@ -3,7 +3,7 @@ from torch import nn
 import torch.nn.functional as F
 from model.backbone.vgg import (vgg19, vgg19_bn)
 from model.backbone.densenet import (densenet121, densenet169, densenet201)
-from model.backbone.resnet import Resnet
+from model.backbone.resnet import resnet_18
 from model.backbone.inception import (inception_v3)
 from model.global_pool import GlobalPool
 from model.attention_map import AttentionMap
@@ -117,6 +117,9 @@ class Classifier(nn.Module):
             elif BACKBONES_TYPES[self.cfg.backbone] == 'inception':
                 setattr(self, "bn_" + str(index),
                         nn.BatchNorm2d(2048 * self.expand))
+            elif BACKBONES_TYPES[self.cfg.backbone] == 'resnet':
+                setattr(self, "bn_" + str(index),
+                        nn.BatchNorm2d(1024 * self.expand))
             else:
                 raise Exception(
                     'Unknown backbone type : {}'.format(self.cfg.backbone)
@@ -134,6 +137,8 @@ class Classifier(nn.Module):
                     self.backbone.num_features))
         elif BACKBONES_TYPES[self.cfg.backbone] == 'inception':
             setattr(self, "attention_map", AttentionMap(self.cfg, 2048))
+        elif BACKBONES_TYPES[self.cfg.backbone] == 'resnet':
+            setattr(self, "attention_map", AttentionMap(self.cfg, 1024))
         else:
             raise Exception(
                 'Unknown backbone type : {}'.format(self.cfg.backbone)
