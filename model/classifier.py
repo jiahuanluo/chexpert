@@ -3,6 +3,7 @@ from torch import nn
 import torch.nn.functional as F
 from model.backbone.vgg import (vgg19, vgg19_bn)
 from model.backbone.densenet import (densenet121, densenet169, densenet201)
+from model.backbone.resnet import Resnet
 from model.backbone.inception import (inception_v3)
 from model.global_pool import GlobalPool
 from model.attention_map import AttentionMap
@@ -11,6 +12,7 @@ from model.attention_map import AttentionMap
 BACKBONES = {'vgg19': vgg19,
              'vgg19_bn': vgg19_bn,
              'densenet121': densenet121,
+             'resnet18': resnet_18,
              'densenet169': densenet169,
              'densenet201': densenet201,
              'inception_v3': inception_v3}
@@ -18,6 +20,7 @@ BACKBONES = {'vgg19': vgg19,
 
 BACKBONES_TYPES = {'vgg19': 'vgg',
                    'vgg19_bn': 'vgg',
+                   'resnet18': 'resnet',
                    'densenet121': 'densenet',
                    'densenet169': 'densenet',
                    'densenet201': 'densenet',
@@ -72,6 +75,17 @@ class Classifier(nn.Module):
                     "fc_" + str(index),
                     nn.Conv2d(
                         2048 * self.expand,
+                        num_class,
+                        kernel_size=1,
+                        stride=1,
+                        padding=0,
+                        bias=True))
+            elif BACKBONES_TYPES[self.cfg.backbone] == 'resnet':
+                setattr(
+                    self,
+                    "fc_" + str(index),
+                    nn.Conv2d(
+                        1024 * self.expand,
                         num_class,
                         kernel_size=1,
                         stride=1,

@@ -123,9 +123,9 @@ def train_epoch(summary, summary_dev, cfg, args, model, dataloader,
                             summary['epoch'] + 1, summary['step'], loss_str,
                             acc_str, time_spent))
             summary_writer.add_scalar(
-                'train/mean_loss{}', loss_sum.mean(), summary['step'])
+                'train/mean_loss', loss_sum.mean(), summary['step'])
             summary_writer.add_scalar(
-                'train/mean_acc{}', acc_sum.mean(), summary['step'])
+                'train/mean_acc', acc_sum.mean(), summary['step'])
             for t in range(num_tasks):
                 summary_writer.add_scalar(
                     'train/loss_{}'.format(label_header[t].replace(" ", "_")), loss_sum[t],
